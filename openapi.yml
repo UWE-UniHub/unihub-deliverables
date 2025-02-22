@@ -3,6 +3,7 @@ openapi: 3.0.3
 info:
   title: UWE UniHub
   version: 0.0.0
+  description: TODO 401
 servers:
   - url: https://uwe.dyzoon.dev/api
   
@@ -19,6 +20,8 @@ tags:
     description: Events
   - name: search
     description: Search
+  - name: followers/subscriptions
+    description: Followers/Subscriptions
     
 paths:
   /auth:
@@ -74,7 +77,7 @@ paths:
         '200':
           description: Ok
           
-  # /profiles:
+  /profiles:
   #   get:
   #     tags: [profiles]
   #     summary: Get profiles
@@ -90,6 +93,25 @@ paths:
   #               type: array
   #               items:
   #                 $ref: '#/components/schemas/Profile'
+    post:
+      tags: [profiles]
+      summary: Post Profile
+      operationId: profilePost
+      security:
+        - sessionAuth: []
+      requestBody:
+        description: Profile
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfilePost'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ProfilePost'
   
   /profiles/{profileId}:
     get:
@@ -128,6 +150,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
+    delete:
+      tags: [profiles]
+      summary: Delete profile
+      operationId: profileIdDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
   
   /communities:
     get:
@@ -144,6 +177,25 @@ paths:
               schema:
                 type: array
                 items:
+                  $ref: '#/components/schemas/Community'
+    post:
+      tags: [communities]
+      summary: Post Community
+      operationId: communityPost
+      security:
+        - sessionAuth: []
+      requestBody:
+        description: community
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommunityPost'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
                   $ref: '#/components/schemas/Community'
   
   /communities/{communityId}:
@@ -183,6 +235,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Community'
+    delete:
+      tags: [communities]
+      summary: Delete community
+      operationId: communityIdDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      responses:
+        '200':
+          description: Ok
   
   /feed:
     get:
@@ -203,6 +266,27 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Post'
+  /post:  
+    post:
+      tags: [posts]
+      summary: Post Post
+      operationId: postPost
+      security:
+        - sessionAuth: []
+      requestBody:
+        description: Post
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostPost'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Post'
+    
   /posts/{postId}:
     get:
       tags: [posts]
@@ -242,6 +326,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Post'
+    delete:
+      tags: [posts]
+      summary: Delete post
+      operationId: postIdDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/postId'
+      responses:
+        '200':
+          description: Ok
                 
   /profile/{profileId}/posts:
     get:
@@ -297,6 +392,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Event'
+    post:
+      tags: [events]
+      summary: Post Event
+      operationId: eventPost
+      security:
+        - sessionAuth: []
+      requestBody:
+        description: Event
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventPost'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Event'
+        
   /events/{eventId}:
     get:
       tags: [events]
@@ -334,6 +449,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Event'
+    delete:
+      tags: [events]
+      summary: Delete event
+      operationId: eventIdDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: Ok
+          
   /search:
     get:
       tags: [search]
@@ -351,14 +478,135 @@ paths:
               schema:
                 type: array
                 items:
-                  oneOf:
+                  allOf:
                     - $ref: '#/components/schemas/Profile'
                     - $ref: '#/components/schemas/Community'
                     - $ref: '#/components/schemas/Event'
-        
   
+  /profile/{profileId}/followers:
+    get:
+      tags: [followers/subscriptions]
+      summary: Get followers of a profile
+      operationId: profileIdFollowersGet
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Profile'
+                
+  /community/{communityId}/followers:
+    get:
+      tags: [followers/subscriptions]
+      summary: Get followers of a community
+      operationId: communityIdFollowersGet
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Profile'
+  
+  /profile/{profileId}/subscriptions:
+    get:
+      tags: [followers/subscriptions]
+      summary: Get subscriptions of a profile
+      operationId: profileIdSubscriptionsGet
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Profile'
+                    - $ref: '#/components/schemas/Community'
+  /profile/{profileId}:
+    post:
+      tags: [followers/subscriptions]
+      summary: Follow a profile
+      operationId: profileIdFollowPost
+      security: 
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+    delete:
+      tags: [followers/subscriptions]
+      summary: Unfollow a profile
+      operationId: profileIdFollowDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        
+                
+  /community/{communityId}:
+    post:
+      tags: [followers/subscriptions]
+      summary: Follow a community
+      operationId: communityIdFollow
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Community'
+    delete:
+      tags: [followers/subscriptions]
+      summary: Unfollow a community
+      operationId: communityIdFollowDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Community'
+                
 components:
-
   securitySchemes:
     sessionAuth:
       type: apiKey
@@ -436,11 +684,13 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: string
         first_name:
           type: string
         last_name: 
           type: string
+        is_staff:
+          type: boolean
         bio:
           type: string
           nullable: true
@@ -457,6 +707,30 @@ components:
             - $ref: '#/components/schemas/ProfileStaffInfo'
           nullable: true
       required: [id, first_name, last_name, bio, subscribers, subscriptions, student, staff]
+      
+    ProfilePost:
+      type: object
+      properties:
+        id:
+          type: number
+        first_name:
+          type: string
+        last_name: 
+          type: string
+        is_staff:
+          type: boolean
+        bio:
+          type: string
+          nullable: true
+        student:
+          allOf:
+            - $ref: '#/components/schemas/ProfileStudentInfo'
+          nullable: true
+        staff:
+          allOf:
+            - $ref: '#/components/schemas/ProfileStaffInfo'
+          nullable: true
+      required: [id, first_name, last_name, bio, student, staff]
     ProfilePatch:
       type: object
       properties:
@@ -478,6 +752,11 @@ components:
         bio:
           type: string
           nullable: true
+        admin:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Profile'
         subscribers:
           type: number
       required: [id,name, bio, subscribers]
@@ -509,7 +788,7 @@ components:
           format: uuid
         content:
           type: string
-        published:
+        created_at:
           type: string
           format: date-time
         event_id:
@@ -520,7 +799,7 @@ components:
           oneOf:
             - $ref: '#/components/schemas/Profile'
             - $ref: '#/components/schemas/Community'
-      required: [id, content, published, event_id, creator]
+      required: [id, content, created_at, event_id, creator]
     
     PostPost:
       type: object
@@ -535,7 +814,7 @@ components:
           oneOf:
             - $ref: '#/components/schemas/Profile'
             - $ref: '#/components/schemas/Community'
-      required: [content, published, event_id, creator]
+      required: [content, event_id, creator]
       
     PostPatch:
       type: object
@@ -553,11 +832,11 @@ components:
         id:
           type: string
           format: uuid
-        desc:
+        description:
           type: string
         location:
           type: string
-        published:
+        created_at:
           type: string
           format: date-time
         date:
@@ -567,12 +846,12 @@ components:
           oneOf:
             - $ref: '#/components/schemas/Profile'
             - $ref: '#/components/schemas/Community'
-      required: [id, desc, location, date, creator]
+      required: [id, desc, location, created_at, date, creator]
     
     EventPost:
       type: object
       properties:
-        desc:
+        description:
           type: string
         location:
           type: string
@@ -588,7 +867,7 @@ components:
     EventPatch:
       type: object
       properties:
-        desc:
+        description:
           type: string
         location:
           type: string
