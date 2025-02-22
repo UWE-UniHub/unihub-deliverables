@@ -814,7 +814,7 @@ components:
           oneOf:
             - $ref: '#/components/schemas/Profile'
             - $ref: '#/components/schemas/Community'
-      required: [content, created_at, event_id, creator]
+      required: [content, event_id, creator]
       
     PostPatch:
       type: object
