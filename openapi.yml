@@ -684,7 +684,7 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: string
         first_name:
           type: string
         last_name: 
@@ -788,7 +788,7 @@ components:
           format: uuid
         content:
           type: string
-        published:
+        created_at:
           type: string
           format: date-time
         event_id:
@@ -799,7 +799,7 @@ components:
           oneOf:
             - $ref: '#/components/schemas/Profile'
             - $ref: '#/components/schemas/Community'
-      required: [id, content, published, event_id, creator]
+      required: [id, content, created_at, event_id, creator]
     
     PostPost:
       type: object
@@ -814,7 +814,7 @@ components:
           oneOf:
             - $ref: '#/components/schemas/Profile'
             - $ref: '#/components/schemas/Community'
-      required: [content, published, event_id, creator]
+      required: [content, created_at, event_id, creator]
       
     PostPatch:
       type: object
@@ -832,11 +832,11 @@ components:
         id:
           type: string
           format: uuid
-        desc:
+        description:
           type: string
         location:
           type: string
-        published:
+        created_at:
           type: string
           format: date-time
         date:
@@ -846,12 +846,12 @@ components:
           oneOf:
             - $ref: '#/components/schemas/Profile'
             - $ref: '#/components/schemas/Community'
-      required: [id, desc, location, date, creator]
+      required: [id, desc, location, created_at, date, creator]
     
     EventPost:
       type: object
       properties:
-        desc:
+        description:
           type: string
         location:
           type: string
@@ -867,7 +867,7 @@ components:
     EventPatch:
       type: object
       properties:
-        desc:
+        description:
           type: string
         location:
           type: string
