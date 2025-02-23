@@ -607,7 +607,6 @@ paths:
                 $ref: '#/components/schemas/Community'
                 
 components:
-
   securitySchemes:
     sessionAuth:
       type: apiKey
@@ -736,6 +735,7 @@ components:
       properties:
         id:
           type: string
+
         first_name:
           type: string
         last_name: 
@@ -871,7 +871,7 @@ components:
             - $ref: '#/components/schemas/Profile'
             - $ref: '#/components/schemas/Community'
       required: [id, description, created_at, location, date, creator]
-    
+
     EventPost:
       type: object
       properties:
