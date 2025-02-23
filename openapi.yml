@@ -72,7 +72,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginPost'
+              $ref: '#/components/schemas/SignupPost'
       responses:
         '200':
           description: Ok
@@ -660,6 +660,28 @@ components:
         type: string
         
   schemas:
+  
+    SignupPost:
+      type: object
+      properties:
+        id:
+          type: number
+        first_name:
+          type: string
+        last_name: 
+          type: string
+        is_staff:
+          type: boolean
+        student:
+          allOf:
+            - $ref: '#/components/schemas/ProfileStudentInfo'
+          nullable: true
+        staff:
+          allOf:
+            - $ref: '#/components/schemas/ProfileStaffInfo'
+          nullable: true
+      required: [id, first_name, last_name, bio, subscribers, subscriptions, student, staff]
+  
     ProfileStudentInfo:
       type: object
       properties:
@@ -712,7 +734,8 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: string
+
         first_name:
           type: string
         last_name: 
@@ -731,6 +754,7 @@ components:
             - $ref: '#/components/schemas/ProfileStaffInfo'
           nullable: true
       required: [id, first_name, last_name, bio, student, staff]
+
     ProfilePatch:
       type: object
       properties:
@@ -846,8 +870,8 @@ components:
           oneOf:
             - $ref: '#/components/schemas/Profile'
             - $ref: '#/components/schemas/Community'
-      required: [id, desc, location, created_at, date, creator]
-    
+      required: [id, description, created_at, location, date, creator]
+
     EventPost:
       type: object
       properties:
@@ -862,7 +886,7 @@ components:
           oneOf:
             - $ref: '#/components/schemas/Profile'
             - $ref: '#/components/schemas/Community'
-      required: [desc, location, date, creator]
+      required: [description, location, date, creator]
       
     EventPatch:
       type: object
