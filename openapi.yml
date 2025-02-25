@@ -3,7 +3,6 @@ openapi: 3.0.3
 info:
   title: UWE UniHub
   version: 0.0.0
-  description: TODO 401
 servers:
   - url: https://uwe.dyzoon.dev/api
   
@@ -39,7 +38,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
-        #TODO 401
+          
+  /auth/signup:
+    post:
+      tags:
+        - auth
+      summary: Signup as client
+      operationId: authSignupPost
+      requestBody:
+        description: Signup data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupPost'
+      responses:
+        '200':
+          description: Ok
           
   /auth/login:
     post:
@@ -60,24 +74,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
-          
-  /auth/signup:
-    post:
-      tags:
-        - auth
-      summary: Signup as client
-      operationId: authSignupPost
-      requestBody:
-        description: Signup data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignupPost'
+  /auth/logout:  
+    delete:
+      tags: [auth]
+      summary: Logout
+      operationId: authDelete
+      security:
+        - sessionAuth: []
       responses:
         '200':
           description: Ok
           
-  /profiles:
+  # /profiles:
   #   get:
   #     tags: [profiles]
   #     summary: Get profiles
@@ -93,25 +101,25 @@ paths:
   #               type: array
   #               items:
   #                 $ref: '#/components/schemas/Profile'
-    post:
-      tags: [profiles]
-      summary: Post Profile
-      operationId: profilePost
-      security:
-        - sessionAuth: []
-      requestBody:
-        description: Profile
-        content: 
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProfilePost'
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/ProfilePost'
+  #   post:
+  #     tags: [profiles]
+  #     summary: Post Profile
+  #     operationId: profilePost
+  #     security:
+  #       - sessionAuth: []
+  #     requestBody:
+  #       description: Profile
+  #       content: 
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/ProfilePost'
+  #     responses:
+  #       '200':
+  #         description: Ok
+  #         content:
+  #           application/json:
+  #             schema:
+  #                 $ref: '#/components/schemas/ProfilePost'
   
   /profiles/{profileId}:
     get:
@@ -161,6 +169,25 @@ paths:
       responses:
         '200':
           description: Ok
+  /profiles/infos:
+    get:
+      tags: [profiles]
+      summary: Get available school, program, etc.
+      operationId: profilesInfosGet
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/Program'
+                    - $ref: '#/components/schemas/Level'
+                    - $ref: '#/components/schemas/School'
+                    - $ref: '#/components/schemas/Position'
+                    - $ref: '#/components/schemas/Department'
   
   /communities:
     get:
@@ -266,26 +293,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Post'
-  /post:  
-    post:
-      tags: [posts]
-      summary: Post Post
-      operationId: postPost
-      security:
-        - sessionAuth: []
-      requestBody:
-        description: Post
-        content: 
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PostPost'
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/Post'
     
   /posts/{postId}:
     get:
@@ -338,7 +345,7 @@ paths:
         '200':
           description: Ok
                 
-  /profile/{profileId}/posts:
+  /profiles/{profileId}/posts:
     get:
       tags: [posts]
       summary: Get posts of a profile
@@ -356,8 +363,29 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Post'
-    
-  /community/{communityId}/posts:
+    post:
+      tags: [posts]
+      summary: Post as a profile
+      operationId: profileIdPostsPost
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      requestBody:
+        description: Post
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostPost'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Post'
+                  
+  /communities/{communityId}/posts:
     get:
       tags: [posts]
       summary: Get posts of a community
@@ -374,6 +402,27 @@ paths:
               schema:
                 type: array
                 items:
+                  $ref: '#/components/schemas/Post'
+    post:
+      tags: [posts]
+      summary: Post as a community
+      operationId: communityIdPostsPost
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      requestBody:
+        description: Post
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostPost'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
                   $ref: '#/components/schemas/Post'
                   
   /events:
@@ -392,25 +441,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Event'
-    post:
-      tags: [events]
-      summary: Post Event
-      operationId: eventPost
-      security:
-        - sessionAuth: []
-      requestBody:
-        description: Event
-        content: 
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EventPost'
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/Event'
+
         
   /events/{eventId}:
     get:
@@ -461,6 +492,86 @@ paths:
         '200':
           description: Ok
           
+  /profiles/{profileId}/events:
+    get:
+      tags: [events]
+      summary: Get events related to profile
+      operationId: profilesProfileIdeventsGet
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+    post:
+      tags: [events]
+      summary: Post event as profile
+      operationId: profilesProfileIdeventsPost
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      requestBody:
+        description: Event
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventPost'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Event'
+  
+  /communities/{communityId}/events:
+    get:
+      tags: [events]
+      summary: Get events related to community
+      operationId: communitiesCommunityIdeventsGet
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+    post:
+      tags: [events]
+      summary: Post event as community
+      operationId: communitiesCommunityIdeventsPost
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      requestBody:
+        description: Event
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventPost'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Event'
+          
   /search:
     get:
       tags: [search]
@@ -470,6 +581,7 @@ paths:
         - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/searchQ'
+  #      - $ref: '#/components/parameters/searchTags'
       responses:
         '200':
           description: Ok
@@ -478,12 +590,35 @@ paths:
               schema:
                 type: array
                 items:
-                  allOf:
+                  oneOf:
                     - $ref: '#/components/schemas/Profile'
                     - $ref: '#/components/schemas/Community'
                     - $ref: '#/components/schemas/Event'
+  # /search/filter:
+  #   get:
+  #     tags: [search]
+  #     summary: Filtered search
+  #     operationId: searchFilterGet
+  #     security:
+  #       - sessionAuth: []
+  #     parameters:
+  #       - $ref: '#/components/parameters/searchQ'
+  #       - $ref: '#/components/parameters/filterProgram'
+  #       - $ref: '#/components/parameters/filterLevel'
+  #       - $ref: '#/components/parameters/filterSchool'
+  #       - $ref: '#/components/parameters/filterDepartment'
+  #     responses:
+  #       '200':
+  #         description: Ok
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 - $ref: '#/components/schemas/Profile'
+
   
-  /profile/{profileId}/followers:
+  /profiles/{profileId}/followers:
     get:
       tags: [followers/subscriptions]
       summary: Get followers of a profile
@@ -502,7 +637,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Profile'
                 
-  /community/{communityId}/followers:
+  /communities/{communityId}/followers:
     get:
       tags: [followers/subscriptions]
       summary: Get followers of a community
@@ -521,7 +656,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Profile'
   
-  /profile/{profileId}/subscriptions:
+  /profiles/{profileId}/subscriptions:
     get:
       tags: [followers/subscriptions]
       summary: Get subscriptions of a profile
@@ -538,10 +673,10 @@ paths:
               schema:
                 type: array
                 items:
-                  allOf:
+                  oneOf:
                     - $ref: '#/components/schemas/Profile'
                     - $ref: '#/components/schemas/Community'
-  /profile/{profileId}:
+  /profiles/{profileId}/follow:
     post:
       tags: [followers/subscriptions]
       summary: Follow a profile
@@ -557,6 +692,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
+  /profiles/{profileId}/unfollow:
     delete:
       tags: [followers/subscriptions]
       summary: Unfollow a profile
@@ -574,7 +710,7 @@ paths:
                 $ref: '#/components/schemas/Profile'
         
                 
-  /community/{communityId}:
+  /communities/{communityId}/follow:
     post:
       tags: [followers/subscriptions]
       summary: Follow a community
@@ -590,6 +726,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Community'
+  /communities/{communityId}/unfollow:
     delete:
       tags: [followers/subscriptions]
       summary: Unfollow a community
@@ -666,6 +803,8 @@ components:
       properties:
         id:
           type: number
+        password:
+          type: string
         first_name:
           type: string
         last_name: 
@@ -680,7 +819,7 @@ components:
           allOf:
             - $ref: '#/components/schemas/ProfileStaffInfo'
           nullable: true
-      required: [id, first_name, last_name, bio, subscribers, subscriptions, student, staff]
+      required: [id, password, first_name, last_name, is_staff, student, staff]
   
     ProfileStudentInfo:
       type: object
@@ -729,31 +868,6 @@ components:
             - $ref: '#/components/schemas/ProfileStaffInfo'
           nullable: true
       required: [id, first_name, last_name, bio, subscribers, subscriptions, student, staff]
-      
-    ProfilePost:
-      type: object
-      properties:
-        id:
-          type: string
-
-        first_name:
-          type: string
-        last_name: 
-          type: string
-        is_staff:
-          type: boolean
-        bio:
-          type: string
-          nullable: true
-        student:
-          allOf:
-            - $ref: '#/components/schemas/ProfileStudentInfo'
-          nullable: true
-        staff:
-          allOf:
-            - $ref: '#/components/schemas/ProfileStaffInfo'
-          nullable: true
-      required: [id, first_name, last_name, bio, student, staff]
 
     ProfilePatch:
       type: object
@@ -788,6 +902,8 @@ components:
     CommunityPost:
       type: object
       properties:
+        id:
+          type: string
         name:
           type: string
         bio:
@@ -819,11 +935,14 @@ components:
           type: string
           format: uuid
           nullable: true
-        creator:
+        profile:
           oneOf:
             - $ref: '#/components/schemas/Profile'
+        community:
+          oneOf:
             - $ref: '#/components/schemas/Community'
-      required: [id, content, created_at, event_id, creator]
+          nullable: True
+      required: [id, content, created_at, event_id, profile, community]
     
     PostPost:
       type: object
@@ -834,11 +953,7 @@ components:
           type: string
           format: uuid
           nullable: true
-        creator:
-          oneOf:
-            - $ref: '#/components/schemas/Profile'
-            - $ref: '#/components/schemas/Community'
-      required: [content, event_id, creator]
+      required: [content, event_id]
       
     PostPatch:
       type: object
@@ -866,11 +981,14 @@ components:
         date:
           type: string
           format: date-time
-        creator:
+        profile:
           oneOf:
             - $ref: '#/components/schemas/Profile'
+        community:
+          oneOf:
             - $ref: '#/components/schemas/Community'
-      required: [id, description, created_at, location, date, creator]
+          nullable: True
+      required: [id, description, created_at, location, date, profile, community]
 
     EventPost:
       type: object
@@ -882,11 +1000,7 @@ components:
         date:
           type: string
           format: date-time
-        creator:
-          oneOf:
-            - $ref: '#/components/schemas/Profile'
-            - $ref: '#/components/schemas/Community'
-      required: [description, location, date, creator]
+      required: [description, location, date]
       
     EventPatch:
       type: object
@@ -905,5 +1019,36 @@ components:
         id:
           type: number
         password:
+          type: string
+      required: [id, password]
+    
+    Program:
+      type: object
+      properties:
+        program:
+          type: string
+    
+    Level:
+      type: object
+      properties:
+        level:
+          type: string
+    
+    School:
+      type: object
+      properties:
+        school:
+          type: string
+    
+    Position:
+      type: object
+      properties:
+        position:
+          type: string
+    
+    Department:
+      type: object
+      properties:
+        Department:
           type: string
         
