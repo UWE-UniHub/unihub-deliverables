@@ -169,11 +169,11 @@ paths:
       responses:
         '200':
           description: Ok
-  /profiles/infos:
+  /programs:
     get:
       tags: [profiles]
-      summary: Get available school, program, etc.
-      operationId: profilesInfosGet
+      summary: Get available program
+      operationId: programsGet
       responses:
         '200':
           description: Ok
@@ -184,9 +184,35 @@ paths:
                 items:
                   oneOf:
                     - $ref: '#/components/schemas/Program'
-                    - $ref: '#/components/schemas/Level'
+  /schools:
+    get:
+      tags: [profiles]
+      summary: Get available schools
+      operationId: choolsGet
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
                     - $ref: '#/components/schemas/School'
-                    - $ref: '#/components/schemas/Position'
+  /departments:
+    get:
+      tags: [profiles]
+      summary: Get available departments
+      operationId: departmentsGet
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
                     - $ref: '#/components/schemas/Department'
   
   /communities:
