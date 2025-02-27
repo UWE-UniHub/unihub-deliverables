@@ -84,6 +84,42 @@ paths:
       responses:
         '200':
           description: Ok
+  /levels:
+    get:
+      tags: [auth]
+      summary: Get available levels
+      operationId: levelsGet
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Levels'
+  /schools:
+    get:
+      tags: [auth]
+      summary: Get available schools
+      operationId: choolsGet
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schools'
+  /departments:
+    get:
+      tags: [auth]
+      summary: Get available departments
+      operationId: departmentsGet
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Departments'
           
   # /profiles:
   #   get:
@@ -169,51 +205,6 @@ paths:
       responses:
         '200':
           description: Ok
-  /programs:
-    get:
-      tags: [profiles]
-      summary: Get available program
-      operationId: programsGet
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  oneOf:
-                    - $ref: '#/components/schemas/Program'
-  /schools:
-    get:
-      tags: [profiles]
-      summary: Get available schools
-      operationId: choolsGet
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  oneOf:
-                    - $ref: '#/components/schemas/School'
-  /departments:
-    get:
-      tags: [profiles]
-      summary: Get available departments
-      operationId: departmentsGet
-      responses:
-        '200':
-          description: Ok
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  oneOf:
-                    - $ref: '#/components/schemas/Department'
   
   /communities:
     get:
@@ -1048,33 +1039,27 @@ components:
           type: string
       required: [id, password]
     
-    Program:
+    Levels:
       type: object
       properties:
-        program:
-          type: string
+        levels:
+          type: array
+          items: 
+            type: string
     
-    Level:
+    Schools:
       type: object
       properties:
-        level:
-          type: string
+        schools:
+          type: array
+          items: 
+            type: string
     
-    School:
+    Departments:
       type: object
       properties:
-        school:
-          type: string
-    
-    Position:
-      type: object
-      properties:
-        position:
-          type: string
-    
-    Department:
-      type: object
-      properties:
-        Department:
-          type: string
+        departments:
+          type: array
+          items: 
+            type: string
         
