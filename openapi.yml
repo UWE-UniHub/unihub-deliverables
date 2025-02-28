@@ -206,6 +206,56 @@ paths:
         '200':
           description: Ok
   
+  /profiles/{profileId}/avatar:
+    get:
+      tags: [profiles]
+      summary: Get profile avatar
+      operationId: profileIdAvatarGet
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+              
+    put:
+      tags: [profiles]
+      summary: Update profile avatar
+      operationId: profileIdAvatarPut
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      requestBody:
+        description: avatar
+        content: 
+          image/png:
+              schema:
+                type: string
+                format: binary
+      responses:
+        '200':
+          description: Ok
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        
+    delete:
+      tags: [profiles]
+      summary: Delte profile avatar
+      operationId: profileIdAvatarDelete
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
+  
   /communities:
     get:
       tags: [communities]
