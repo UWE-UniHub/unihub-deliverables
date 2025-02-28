@@ -290,6 +290,36 @@ paths:
       responses:
         '200':
           description: Ok
+          
+  /communities/{communityId}/admin/{profileId}:
+    post:
+      tags: [communities]
+      summary: Grant admin privileges
+      operationId: communityIdAdminProfileIdPost
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Community'
+    delete:
+      tags: [communities]
+      summary: Revoke admin privileges
+      operationId: communityIdAdminProfileIdDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
   
   /feed:
     get:
@@ -709,7 +739,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
-  /profiles/{profileId}/unfollow:
     delete:
       tags: [followers/subscriptions]
       summary: Unfollow a profile
@@ -743,7 +772,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Community'
-  /communities/{communityId}/unfollow:
     delete:
       tags: [followers/subscriptions]
       summary: Unfollow a community
@@ -907,7 +935,7 @@ components:
         bio:
           type: string
           nullable: true
-        admin:
+        admins:
           type: array
           items:
             allOf:
