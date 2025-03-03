@@ -250,6 +250,8 @@ paths:
       tags: [profiles]
       summary: Delte profile avatar
       operationId: profileIdAvatarDelete
+      security:
+        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/profileId'
       responses:
@@ -261,8 +263,6 @@ paths:
       tags: [communities]
       summary: Get communities
       operationId: communitiesGet
-      security:
-        - sessionAuth: []
       responses:
         '200':
           description: Ok
@@ -299,15 +299,13 @@ paths:
       operationId: communityIdGet
       parameters:
         - $ref: '#/components/parameters/communityId'
-      security:
-        - sessionAuth: []
       responses:
         '200':
           description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Community'
+                $ref: '#/components/schemas/CommunityDetailed'
     patch:
       tags: [communities]
       summary: Edit community
@@ -385,6 +383,8 @@ paths:
       tags: [communities]
       summary: Delte community avatar
       operationId: communityIdAvatarDelete
+      security:
+        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/communityId'
       responses:
@@ -395,8 +395,6 @@ paths:
       tags: [communities]
       summary: Get admins
       operationId: communityIdAdminsGet
-      security:
-        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/communityId'
       responses:
@@ -407,11 +405,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Admins'
             
-  /communities/{communityId}/admin/{profileId}:
+  /communities/{communityId}/admins/{profileId}:
     post:
       tags: [communities]
       summary: Grant admin privileges
-      operationId: communityIdAdminProfileIdPost
+      operationId: communityIdAdminsProfileIdPost
       security:
         - sessionAuth: []
       parameters:
@@ -427,7 +425,7 @@ paths:
     delete:
       tags: [communities]
       summary: Revoke admin privileges
-      operationId: communityIdAdminProfileIdDelete
+      operationId: communityIdAdminsProfileIdDelete
       security:
         - sessionAuth: []
       parameters:
@@ -462,8 +460,6 @@ paths:
       operationId: postIdGet
       parameters:
         - $ref: '#/components/parameters/postId'
-      security:
-        - sessionAuth: []
       responses:
         '200':
           description: Ok
@@ -551,8 +547,6 @@ paths:
       tags: [posts]
       summary: Get posts of a community
       operationId: communityIdPostsGet
-      security:
-        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/communityId'
       responses:
@@ -1064,6 +1058,15 @@ components:
           type: string
           nullable: true
       required: [id,name, bio]
+    
+    CommunityDetails:
+      type: object
+      properties:
+        is_admin:
+          type: boolean
+        is_creator:
+          type: boolean
+      required: [is_creator,is_admin]
           
     CommunityPatch:
       type: object
@@ -1073,6 +1076,13 @@ components:
         bio:
           type: string
           nullable: true
+    
+    CommunityDetailed:
+      allOf:
+        - $ref: '#/components/schemas/Community'
+        - $ref: '#/components/schemas/CommunityDetails'
+          
+        
     
     Admins:
       type: array
