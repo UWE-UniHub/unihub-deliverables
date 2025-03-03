@@ -84,6 +84,42 @@ paths:
       responses:
         '200':
           description: Ok
+  /levels:
+    get:
+      tags: [auth]
+      summary: Get available levels
+      operationId: levelsGet
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Levels'
+  /schools:
+    get:
+      tags: [auth]
+      summary: Get available schools
+      operationId: choolsGet
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schools'
+  /departments:
+    get:
+      tags: [auth]
+      summary: Get available departments
+      operationId: departmentsGet
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Departments'
           
   # /profiles:
   #   get:
@@ -169,25 +205,56 @@ paths:
       responses:
         '200':
           description: Ok
-  /profiles/infos:
+  
+  /profiles/{profileId}/avatar:
     get:
       tags: [profiles]
-      summary: Get available school, program, etc.
-      operationId: profilesInfosGet
+      summary: Get profile avatar
+      operationId: profileIdAvatarGet
+      parameters:
+        - $ref: '#/components/parameters/profileId'
       responses:
         '200':
           description: Ok
           content:
-            application/json:
+            image/png:
               schema:
-                type: array
-                items:
-                  oneOf:
-                    - $ref: '#/components/schemas/Program'
-                    - $ref: '#/components/schemas/Level'
-                    - $ref: '#/components/schemas/School'
-                    - $ref: '#/components/schemas/Position'
-                    - $ref: '#/components/schemas/Department'
+                type: string
+                format: binary
+              
+    put:
+      tags: [profiles]
+      summary: Update profile avatar
+      operationId: profileIdAvatarPut
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      requestBody:
+        description: avatar
+        content: 
+          image/png:
+              schema:
+                type: string
+                format: binary
+      responses:
+        '200':
+          description: Ok
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        
+    delete:
+      tags: [profiles]
+      summary: Delte profile avatar
+      operationId: profileIdAvatarDelete
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
   
   /communities:
     get:
@@ -274,13 +341,107 @@ paths:
         '200':
           description: Ok
   
+  /communities/{communityId}/avatar:
+    get:
+      tags: [communities]
+      summary: Get community avatar
+      operationId: communityIdAvatarGet
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+              
+    put:
+      tags: [communities]
+      summary: Update community avatar
+      operationId: communityIdAvatarPut
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      requestBody:
+        description: avatar
+        content: 
+          image/png:
+              schema:
+                type: string
+                format: binary
+      responses:
+        '200':
+          description: Ok
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        
+    delete:
+      tags: [communities]
+      summary: Delte community avatar
+      operationId: communityIdAvatarDelete
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      responses:
+        '200':
+          description: Ok
+  /communities/{communityId}/admins:
+    get:
+      tags: [communities]
+      summary: Get admins
+      operationId: communityIdAdminsGet
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admins'
+            
+  /communities/{communityId}/admin/{profileId}:
+    post:
+      tags: [communities]
+      summary: Grant admin privileges
+      operationId: communityIdAdminProfileIdPost
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Community'
+    delete:
+      tags: [communities]
+      summary: Revoke admin privileges
+      operationId: communityIdAdminProfileIdDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Ok
+  
   /feed:
     get:
       tags: [posts]
       summary: Get latest posts
       operationId: postsGet
-      security:
-        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/feedPointer'
         - $ref: '#/components/parameters/feedLimit'
@@ -692,7 +853,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
-  /profiles/{profileId}/unfollow:
     delete:
       tags: [followers/subscriptions]
       summary: Unfollow a profile
@@ -726,7 +886,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Community'
-  /communities/{communityId}/unfollow:
     delete:
       tags: [followers/subscriptions]
       summary: Unfollow a community
@@ -890,11 +1049,6 @@ components:
         bio:
           type: string
           nullable: true
-        admin:
-          type: array
-          items:
-            allOf:
-              - $ref: '#/components/schemas/Profile'
         subscribers:
           type: number
       required: [id,name, bio, subscribers]
@@ -919,6 +1073,12 @@ components:
         bio:
           type: string
           nullable: true
+    
+    Admins:
+      type: array
+      items:
+        allOf:
+          - $ref: '#/components/schemas/Profile'
     
     Post:
       type: object
@@ -1022,33 +1182,27 @@ components:
           type: string
       required: [id, password]
     
-    Program:
+    Levels:
       type: object
       properties:
-        program:
-          type: string
+        levels:
+          type: array
+          items: 
+            type: string
     
-    Level:
+    Schools:
       type: object
       properties:
-        level:
-          type: string
+        schools:
+          type: array
+          items: 
+            type: string
     
-    School:
+    Departments:
       type: object
       properties:
-        school:
-          type: string
-    
-    Position:
-      type: object
-      properties:
-        position:
-          type: string
-    
-    Department:
-      type: object
-      properties:
-        Department:
-          type: string
+        departments:
+          type: array
+          items: 
+            type: string
         
