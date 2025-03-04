@@ -121,42 +121,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Departments'
           
-  # /profiles:
-  #   get:
-  #     tags: [profiles]
-  #     summary: Get profiles
-  #     operationId: profilesGet
-  #     security:
-  #       - sessionAuth: []
-  #     responses:
-  #       '200':
-  #         description: Ok
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: array
-  #               items:
-  #                 $ref: '#/components/schemas/Profile'
-  #   post:
-  #     tags: [profiles]
-  #     summary: Post Profile
-  #     operationId: profilePost
-  #     security:
-  #       - sessionAuth: []
-  #     requestBody:
-  #       description: Profile
-  #       content: 
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/ProfilePost'
-  #     responses:
-  #       '200':
-  #         description: Ok
-  #         content:
-  #           application/json:
-  #             schema:
-  #                 $ref: '#/components/schemas/ProfilePost'
-  
   /profiles/{profileId}:
     get:
       tags: [profiles]
@@ -164,8 +128,6 @@ paths:
       operationId: profileProfileIdGet
       parameters:
         - $ref: '#/components/parameters/profileId'
-      security:
-        - sessionAuth: []
       responses:
         '200':
           description: Ok
@@ -326,7 +288,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Community'
+                $ref: '#/components/schemas/CommunityDetailed'
     delete:
       tags: [communities]
       summary: Delete community
@@ -390,6 +352,7 @@ paths:
       responses:
         '200':
           description: Ok
+          
   /communities/{communityId}/admins:
     get:
       tags: [communities]
@@ -403,8 +366,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Admins'
-            
+                $ref: '#/components/schemas/CommunityAdmins'
+
   /communities/{communityId}/admins/{profileId}:
     post:
       tags: [communities]
@@ -507,8 +470,6 @@ paths:
       tags: [posts]
       summary: Get posts of a profile
       operationId: profileIdPostsGet
-      security:
-        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/profileId'
       responses:
@@ -585,8 +546,6 @@ paths:
       tags: [events]
       summary: Get events
       operationId: eventsGet
-      security:
-       - sessionAuth: []
       responses:
         '200':
           description: Ok
@@ -605,8 +564,6 @@ paths:
       operationId: eventIdGet
       parameters:
         - $ref: '#/components/parameters/eventId'
-      security:
-        - sessionAuth: []
       responses:
         '200':
           description: Ok
@@ -652,8 +609,6 @@ paths:
       tags: [events]
       summary: Get events related to profile
       operationId: profilesProfileIdeventsGet
-      security:
-        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/profileId'
       responses:
@@ -692,8 +647,6 @@ paths:
       tags: [events]
       summary: Get events related to community
       operationId: communitiesCommunityIdeventsGet
-      security:
-        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/communityId'
       responses:
@@ -732,8 +685,6 @@ paths:
       tags: [search]
       summary: General search
       operationId: searchGet
-      security: 
-        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/searchQ'
   #      - $ref: '#/components/parameters/searchTags'
@@ -778,8 +729,6 @@ paths:
       tags: [followers/subscriptions]
       summary: Get followers of a profile
       operationId: profileIdFollowersGet
-      security:
-        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/profileId'
       responses:
@@ -797,8 +746,6 @@ paths:
       tags: [followers/subscriptions]
       summary: Get followers of a community
       operationId: communityIdFollowersGet
-      security:
-        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/communityId'
       responses:
@@ -816,8 +763,6 @@ paths:
       tags: [followers/subscriptions]
       summary: Get subscriptions of a profile
       operationId: profileIdSubscriptionsGet
-      security:
-        - sessionAuth: []
       parameters:
         - $ref: '#/components/parameters/profileId'
       responses:
@@ -1046,7 +991,17 @@ components:
         subscribers:
           type: number
       required: [id,name, bio, subscribers]
-    
+      
+    CommunityDetailed:
+      allOf:
+        - $ref: '#/components/schemas/Community'
+        - type: object
+          properties:
+            is_admin:
+              type: boolean
+            is_creator:
+              type: boolean
+
     CommunityPost:
       type: object
       properties:
@@ -1081,15 +1036,18 @@ components:
       allOf:
         - $ref: '#/components/schemas/Community'
         - $ref: '#/components/schemas/CommunityDetails'
-          
-        
+
     
-    Admins:
-      type: array
-      items:
-        allOf:
-          - $ref: '#/components/schemas/Profile'
-    
+    CommunityAdmins:
+      type: object
+      properties:
+        creator:
+          $ref: '#/components/schemas/Profile'
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/Profile'
+
     Post:
       type: object
       properties:
