@@ -365,8 +365,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Admins'
-            
+                $ref: '#/components/schemas/CommunityAdmins'
+
   /communities/{communityId}/admins/{profileId}:
     post:
       tags: [communities]
@@ -1022,12 +1022,16 @@ components:
           type: string
           nullable: true
     
-    Admins:
-      type: array
-      items:
-        allOf:
-          - $ref: '#/components/schemas/Profile'
-    
+    CommunityAdmins:
+      type: object
+      properties:
+        creator:
+          $ref: '#/components/schemas/Profile'
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/Profile'
+
     Post:
       type: object
       properties:
