@@ -413,7 +413,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
+                  oneOf:
+                    - $ref: '#/components/schemas/PostProfile'
+                    - $ref: '#/components/schemas/PostCommunity'
     
   /posts/{postId}:
     get:
@@ -430,7 +432,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
+                  oneOf:
+                    - $ref: '#/components/schemas/PostProfile'
+                    - $ref: '#/components/schemas/PostCommunity'
     patch:
       tags: [posts]
       summary: Edit post
@@ -451,7 +455,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
+                oneOf:
+                  - $ref: '#/components/schemas/PostProfile'
+                  - $ref: '#/components/schemas/PostCommunity'
     delete:
       tags: [posts]
       summary: Delete post
@@ -479,7 +485,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
+                  $ref: '#/components/schemas/PostProfile'
     post:
       tags: [posts]
       summary: Post as a profile
@@ -500,7 +506,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Post'
+                  $ref: '#/components/schemas/PostProfile'
                   
   /communities/{communityId}/posts:
     get:
@@ -517,7 +523,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
+                  $ref: '#/components/schemas/PostCommunity'
     post:
       tags: [posts]
       summary: Post as a community
@@ -538,7 +544,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Post'
+                  $ref: '#/components/schemas/PostCommunity'
                   
   /events:
     get:
@@ -964,7 +970,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/ProfileStaffInfo'
           nullable: true
-      required: [id, first_name, last_name, bio, subscribers, subscriptions, student, staff]
+        is_subscribed:
+          type: boolean
+      required: [id, first_name, last_name, bio, subscribers, subscriptions, student, staff, is_subscribed]
 
     ProfilePatch:
       type: object
@@ -1032,7 +1040,7 @@ components:
           items:
             $ref: '#/components/schemas/Profile'
 
-    Post:
+    PostGeneric:
       type: object
       properties:
         id:
@@ -1047,14 +1055,21 @@ components:
           type: string
           format: uuid
           nullable: true
+      required: [id, content, created_at, event_id]
+      
+    PostProfile:
+      allOf:
+        - $ref: '#/components/schemas/PostGeneric'
+      properties:
         profile:
-          oneOf:
-            - $ref: '#/components/schemas/Profile'
+          $ref: '#/components/schemas/Profile'
+    
+    PostCommunity:
+      allOf:
+          - $ref: '#/components/schemas/PostGeneric'
+      properties:
         community:
-          oneOf:
-            - $ref: '#/components/schemas/Community'
-          nullable: True
-      required: [id, content, created_at, event_id, profile, community]
+          $ref: '#/components/schemas/Community'
     
     PostPost:
       type: object
