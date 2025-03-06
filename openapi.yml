@@ -5,7 +5,7 @@ info:
   version: 0.0.0
 servers:
   - url: https://uwe.dyzoon.dev/api
-  
+
 tags:
   - name: auth
     description: Auth
@@ -134,7 +134,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
+                $ref: '#/components/schemas/ProfileById'
     patch:
       tags: [profiles]
       summary: Edit profile
@@ -155,7 +155,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
+                $ref: '#/components/schemas/ProfileById'
     delete:
       tags: [profiles]
       summary: Delete profile
@@ -287,7 +287,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Community'
+                $ref: '#/components/schemas/CommunityDetailed'
     delete:
       tags: [communities]
       summary: Delete community
@@ -383,7 +383,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Community'
+                $ref: '#/components/schemas/ProfileById'
     delete:
       tags: [communities]
       summary: Revoke admin privileges
@@ -796,7 +796,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
+                $ref: '#/components/schemas/ProfileById'
     delete:
       tags: [followers/subscriptions]
       summary: Unfollow a profile
@@ -811,7 +811,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
+                $ref: '#/components/schemas/ProfileById'
         
                 
   /communities/{communityId}/follow:
@@ -829,7 +829,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Community'
+                $ref: '#/components/schemas/CommunityDetailed'
     delete:
       tags: [followers/subscriptions]
       summary: Unfollow a community
@@ -844,7 +844,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Community'
+                $ref: '#/components/schemas/CommunityDetailed'
                 
 components:
   securitySchemes:
@@ -970,9 +970,15 @@ components:
           allOf:
             - $ref: '#/components/schemas/ProfileStaffInfo'
           nullable: true
-        is_subscribed:
-          type: boolean
       required: [id, first_name, last_name, bio, subscribers, subscriptions, student, staff, is_subscribed]
+      
+    ProfileById:
+      allOf:
+        - $ref: '#/components/schemas/Profile'
+        - type: object
+          properties:
+            is_subscribed: 
+              type: boolean
 
     ProfilePatch:
       type: object
@@ -1007,6 +1013,8 @@ components:
             is_admin:
               type: boolean
             is_creator:
+              type: boolean
+            is_subscribed:
               type: boolean
 
     CommunityPost:
