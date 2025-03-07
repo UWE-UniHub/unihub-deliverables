@@ -979,6 +979,7 @@ components:
           properties:
             is_subscribed: 
               type: boolean
+      required: [is_subscribed]
 
     ProfilePatch:
       type: object
@@ -1016,6 +1017,7 @@ components:
               type: boolean
             is_subscribed:
               type: boolean
+      required: [is_admin,is_creator, is_subscribed]
 
     CommunityPost:
       type: object
