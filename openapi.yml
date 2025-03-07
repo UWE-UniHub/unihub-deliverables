@@ -5,7 +5,7 @@ info:
   version: 0.0.0
 servers:
   - url: https://uwe.dyzoon.dev/api
-  
+
 tags:
   - name: auth
     description: Auth
@@ -134,7 +134,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
+                $ref: '#/components/schemas/ProfileById'
     patch:
       tags: [profiles]
       summary: Edit profile
@@ -155,7 +155,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
+                $ref: '#/components/schemas/ProfileById'
     delete:
       tags: [profiles]
       summary: Delete profile
@@ -287,7 +287,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Community'
+                $ref: '#/components/schemas/CommunityDetailed'
     delete:
       tags: [communities]
       summary: Delete community
@@ -383,7 +383,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Community'
+                $ref: '#/components/schemas/ProfileById'
     delete:
       tags: [communities]
       summary: Revoke admin privileges
@@ -413,7 +413,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
+                  oneOf:
+                    - $ref: '#/components/schemas/PostProfile'
+                    - $ref: '#/components/schemas/PostCommunity'
     
   /posts/{postId}:
     get:
@@ -430,7 +432,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
+                  oneOf:
+                    - $ref: '#/components/schemas/PostProfile'
+                    - $ref: '#/components/schemas/PostCommunity'
     patch:
       tags: [posts]
       summary: Edit post
@@ -451,7 +455,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
+                oneOf:
+                  - $ref: '#/components/schemas/PostProfile'
+                  - $ref: '#/components/schemas/PostCommunity'
     delete:
       tags: [posts]
       summary: Delete post
@@ -479,7 +485,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
+                  $ref: '#/components/schemas/PostProfile'
     post:
       tags: [posts]
       summary: Post as a profile
@@ -500,7 +506,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Post'
+                  $ref: '#/components/schemas/PostProfile'
                   
   /communities/{communityId}/posts:
     get:
@@ -517,7 +523,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
+                  $ref: '#/components/schemas/PostCommunity'
     post:
       tags: [posts]
       summary: Post as a community
@@ -538,7 +544,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Post'
+                  $ref: '#/components/schemas/PostCommunity'
                   
   /events:
     get:
@@ -790,7 +796,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
+                $ref: '#/components/schemas/ProfileById'
     delete:
       tags: [followers/subscriptions]
       summary: Unfollow a profile
@@ -805,7 +811,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
+                $ref: '#/components/schemas/ProfileById'
         
                 
   /communities/{communityId}/follow:
@@ -823,7 +829,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Community'
+                $ref: '#/components/schemas/CommunityDetailed'
     delete:
       tags: [followers/subscriptions]
       summary: Unfollow a community
@@ -838,7 +844,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Community'
+                $ref: '#/components/schemas/CommunityDetailed'
                 
 components:
   securitySchemes:
@@ -964,7 +970,16 @@ components:
           allOf:
             - $ref: '#/components/schemas/ProfileStaffInfo'
           nullable: true
-      required: [id, first_name, last_name, bio, subscribers, subscriptions, student, staff]
+      required: [id, first_name, last_name, bio, subscribers, subscriptions, student, staff, is_subscribed]
+      
+    ProfileById:
+      allOf:
+        - $ref: '#/components/schemas/Profile'
+        - type: object
+          properties:
+            is_subscribed: 
+              type: boolean
+      required: [is_subscribed]
 
     ProfilePatch:
       type: object
@@ -1000,6 +1015,9 @@ components:
               type: boolean
             is_creator:
               type: boolean
+            is_subscribed:
+              type: boolean
+      required: [is_admin,is_creator, is_subscribed]
 
     CommunityPost:
       type: object
@@ -1032,7 +1050,7 @@ components:
           items:
             $ref: '#/components/schemas/Profile'
 
-    Post:
+    PostGeneric:
       type: object
       properties:
         id:
@@ -1047,14 +1065,21 @@ components:
           type: string
           format: uuid
           nullable: true
+      required: [id, content, created_at, event_id]
+      
+    PostProfile:
+      allOf:
+        - $ref: '#/components/schemas/PostGeneric'
+      properties:
         profile:
-          oneOf:
-            - $ref: '#/components/schemas/Profile'
+          $ref: '#/components/schemas/Profile'
+    
+    PostCommunity:
+      allOf:
+          - $ref: '#/components/schemas/PostGeneric'
+      properties:
         community:
-          oneOf:
-            - $ref: '#/components/schemas/Community'
-          nullable: True
-      required: [id, content, created_at, event_id, profile, community]
+          $ref: '#/components/schemas/Community'
     
     PostPost:
       type: object
