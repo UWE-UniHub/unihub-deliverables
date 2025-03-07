@@ -1166,6 +1166,7 @@ components:
           type: array
           items: 
             type: string
+      required: [levels]
     
     Schools:
       type: object
@@ -1174,6 +1175,7 @@ components:
           type: array
           items: 
             type: string
+      required: [schools]
     
     Departments:
       type: object
@@ -1182,4 +1184,5 @@ components:
           type: array
           items: 
             type: string
+      required: [departments]
         
