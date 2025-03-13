@@ -559,7 +559,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  oneOf:
+                  - $ref: '#/components/schemas/EventProfile'
+                  - $ref: '#/components/schemas/EventCommunity'
 
         
   /events/{eventId}:
@@ -575,7 +577,9 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Event'
+                  oneOf:
+                    - $ref: '#/components/schemas/EventProfile'
+                    - $ref: '#/components/schemas/EventCommunity'
     patch:
       tags: [events]
       summary: Edit event
@@ -596,7 +600,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
+                oneOf:
+                  - $ref: '#/components/schemas/EventProfile'
+                  - $ref: '#/components/schemas/EventCommunity'
+                  
     delete:
       tags: [events]
       summary: Delete event
@@ -624,7 +631,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/EventProfile'
     post:
       tags: [events]
       summary: Post event as profile
@@ -645,7 +652,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/EventProfile'
   
   /communities/{communityId}/events:
     get:
@@ -662,7 +669,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/EventCommunity'
     post:
       tags: [events]
       summary: Post event as community
@@ -683,7 +690,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/EventCommunity'
           
   /search:
     get:
@@ -704,7 +711,8 @@ paths:
                   oneOf:
                     - $ref: '#/components/schemas/Profile'
                     - $ref: '#/components/schemas/Community'
-                    - $ref: '#/components/schemas/Event'
+                    - $ref: '#/components/schemas/EventProfile'
+                    - $ref: '#/components/schemas/EventCommunity'
   # /search/filter:
   #   get:
   #     tags: [search]
@@ -1073,6 +1081,7 @@ components:
       properties:
         profile:
           $ref: '#/components/schemas/Profile'
+      required: [profile]
     
     PostCommunity:
       allOf:
@@ -1080,7 +1089,8 @@ components:
       properties:
         community:
           $ref: '#/components/schemas/Community'
-    
+      required: [community]
+      
     PostPost:
       type: object
       properties:
@@ -1102,7 +1112,7 @@ components:
           format: uuid
           nullable: true
     
-    Event:
+    EventGeneric:
       type: object
       properties:
         id:
@@ -1118,14 +1128,23 @@ components:
         date:
           type: string
           format: date-time
+      required: [id, description, created_at, location, date]
+    
+    EventProfile:
+      allOf:
+        - $ref: '#/components/schemas/EventGeneric'
+      properties:
         profile:
-          oneOf:
-            - $ref: '#/components/schemas/Profile'
+          $ref: '#/components/schemas/Profile'
+      required: [profile]
+    
+    EventCommunity:
+      allOf:
+        - $ref: '#/components/schemas/EventGeneric'
+      properties:
         community:
-          oneOf:
-            - $ref: '#/components/schemas/Community'
-          nullable: True
-      required: [id, description, created_at, location, date, profile, community]
+          $ref: '#/components/schemas/Community'
+      required: [community]
 
     EventPost:
       type: object
