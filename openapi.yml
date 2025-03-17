@@ -469,6 +469,58 @@ paths:
       responses:
         '200':
           description: Ok
+  
+  /posts/{postId}/img:
+    get:
+      tags: [posts]
+      summary: Get post img
+      operationId: postIdImgGet
+      parameters:
+        - $ref: '#/components/parameters/postId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+              
+    put:
+      tags: [posts]
+      summary: Update post img
+      operationId: postIdImgPut
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/postId'
+      requestBody:
+        description: avatar
+        content: 
+          image/png:
+              schema:
+                type: string
+                format: binary
+      responses:
+        '200':
+          description: Ok
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        
+    delete:
+      tags: [posts]
+      summary: Delte post img
+      operationId: postIdImgDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/postId'
+      responses:
+        '200':
+          description: Ok
                 
   /profiles/{profileId}/posts:
     get:
@@ -1069,10 +1121,10 @@ components:
         created_at:
           type: string
           format: date-time
-        event_id:
-          type: string
-          format: uuid
-          nullable: true
+        event:
+          oneOf:
+            - $ref: '#/components/schemas/EventProfile'
+            - $ref: '#/components/schemas/EventCommunity'
       required: [id, content, created_at, event_id]
       
     PostProfile:
