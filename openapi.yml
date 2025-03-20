@@ -366,6 +366,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CommunityAdmins'
+  
+  /communities/{communityId}/admins/eligible:
+    get:
+      tags: [communities]
+      summary: Get eligible admins to be
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/communityId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
 
   /communities/{communityId}/admins/{profileId}:
     post:
@@ -514,6 +530,55 @@ paths:
       tags: [posts]
       summary: Delte post img
       operationId: postIdImgDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/postId'
+      responses:
+        '200':
+          description: Ok
+  
+  /posts/{postId}/likes:
+    get:
+      tags: [posts]
+      summary: Get users who liked the post
+      operationId: postIdLikesGet
+      parameters:
+        - $ref: '#/components/parameters/postId'
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Profile'
+    
+    post:
+      tags: [posts]
+      summary: Like a post
+      operationId: postIdLikesPost
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/postId'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/PostProfile'
+                  - $ref: '#/components/schemas/PostCommunity'
+    
+    delete:
+      tags: [posts]
+      summary: Delete like
+      operationId: postIdLikesDelete
       security:
         - sessionAuth: []
       parameters:
@@ -1125,7 +1190,11 @@ components:
           oneOf:
             - $ref: '#/components/schemas/EventProfile'
             - $ref: '#/components/schemas/EventCommunity'
-      required: [id, content, created_at, event_id]
+        likes:
+          type: number
+        is_liked:
+          type: boolean
+      required: [id, content, created_at, event_id, likes, is_liked]
       
     PostProfile:
       allOf:
