@@ -381,7 +381,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Profile'
 
   /communities/{communityId}/admins/{profileId}:
     post:
