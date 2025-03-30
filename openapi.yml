@@ -421,19 +421,15 @@ paths:
       summary: Get latest posts
       operationId: postsGet
       parameters:
-        - $ref: '#/components/parameters/feedPointer'
-        - $ref: '#/components/parameters/feedLimit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
       responses:
         '200':
           description: Ok
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  oneOf:
-                    - $ref: '#/components/schemas/PostProfile'
-                    - $ref: '#/components/schemas/PostCommunity'
+                $ref: '#/components/schemas/Feed'
     
   /posts/{postId}:
     get:
@@ -596,15 +592,15 @@ paths:
       operationId: profileIdPostsGet
       parameters:
         - $ref: '#/components/parameters/profileId'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
       responses:
         '200':
           description: Ok
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PostProfile'
+                $ref: '#/components/schemas/FeedProfile'
     post:
       tags: [posts]
       summary: Post as a profile
@@ -634,15 +630,15 @@ paths:
       operationId: communityIdPostsGet
       parameters:
         - $ref: '#/components/parameters/communityId'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
       responses:
         '200':
           description: Ok
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PostCommunity'
+                $ref: '#/components/schemas/FeedCommunity'
     post:
       tags: [posts]
       summary: Post as a community
@@ -1007,14 +1003,14 @@ components:
       schema:
         type: string
         format: uuid
-    feedPointer:
-      name: feedPointer
+    offset:
+      name: offset
       in: query
       required: false
       schema:
         type: number
-    feedLimit:
-      name: feedLimit
+    limit:
+      name: limit
       in: query
       required: false
       schema:
@@ -1213,6 +1209,49 @@ components:
         community:
           $ref: '#/components/schemas/Community'
       required: [community]
+      
+    GenericFeed:
+      type: object
+      properties:
+        count:
+          type: number
+        next:
+          type: number
+        previous:
+          type: number
+      required: [count, next, previous]
+    Feed:
+      allOf:
+        - $ref: '#/components/schemas/GenericFeed'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/PostCommunity'
+                  - $ref: '#/components/schemas/PostProfile'
+          required: [results]
+    FeedProfile:
+      allOf:
+        - $ref: '#/components/schemas/GenericFeed'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/PostProfile'
+          required: [results]
+    FeedCommunity:
+      allOf:
+        - $ref: '#/components/schemas/GenericFeed'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/PostCommunity'
+          required: [results]
       
     PostPost:
       type: object
