@@ -1215,9 +1215,9 @@ components:
       properties:
         count:
           type: number
-        next:
+        next_page:
           type: number
-        previous:
+        previous_page:
           type: number
       required: [count, next, previous]
     Feed:
