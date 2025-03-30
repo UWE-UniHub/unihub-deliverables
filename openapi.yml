@@ -1219,7 +1219,7 @@ components:
           type: number
         previous_page:
           type: number
-      required: [count, next, previous]
+      required: [count, next_page, previous_page]
     Feed:
       allOf:
         - $ref: '#/components/schemas/GenericFeed'
