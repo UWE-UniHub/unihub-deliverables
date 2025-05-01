@@ -1321,7 +1321,7 @@ components:
         subscribers_count:
           type: number
         is_subscribed:
-          type: number
+          type: boolean
       required: [id, description, created_at, location, date, required_materials, max_capacity, subscribers_count, is_subscribed]
     
     EventProfile:
