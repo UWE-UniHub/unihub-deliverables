@@ -730,6 +730,29 @@ paths:
       responses:
         '200':
           description: Ok
+  /events/{eventId}/subscribe:
+    post:
+      tags: [events]
+      summary: Subscribe to event
+      operationId: eventsEventIdSubscribePost
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: Ok
+    delete:
+      tags: [events]
+      summary: Unsub from event
+      operationId: eventsEventIdSubscribeDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        '200':
+          description: Ok
           
   /profiles/{profileId}/events:
     get:
@@ -1290,7 +1313,16 @@ components:
         date:
           type: string
           format: date-time
-      required: [id, description, created_at, location, date]
+        required_materials:
+          type: string
+          description: Comma separated strings
+        max_capacity:
+          type: number
+        subscribers_count:
+          type: number
+        is_subscribed:
+          type: number
+      required: [id, description, created_at, location, date, required_materials, max_capacity, subscribers_count, is_subscribed]
     
     EventProfile:
       allOf:
@@ -1318,7 +1350,12 @@ components:
         date:
           type: string
           format: date-time
-      required: [description, location, date]
+        required_materials:
+          type: string
+          description: Comma separated strings
+        max_capacity:
+          type: number
+      required: [description, location, date, required_materials, max_capacity]
       
     EventPatch:
       type: object
