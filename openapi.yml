@@ -1052,6 +1052,8 @@ components:
       properties:
         id:
           type: number
+        email:
+          type: string
         password:
           type: string
         first_name:
@@ -1068,18 +1070,26 @@ components:
           allOf:
             - $ref: '#/components/schemas/ProfileStaffInfo'
           nullable: true
-      required: [id, password, first_name, last_name, is_staff, student, staff]
+        address:
+          type: string
+        date_of_birth:
+          type: string
+          format: date-time
+        interests:
+          type: string
+          description: Comma-separated strings
+      required: [id, password, first_name, last_name, is_staff, student, staff, email, address, date_of_birth, interests]
   
     ProfileStudentInfo:
       type: object
       properties:
         program: 
           type: string
-        level:
-          type: string
+        year:
+          type: number
         school:
           type: string
-      required: [program, level, school]
+      required: [program, year, school]
       
     ProfileStaffInfo:
       type: object
@@ -1094,6 +1104,8 @@ components:
       type: object
       properties:
         id:
+          type: string
+        email:
           type: string
         first_name:
           type: string
@@ -1116,7 +1128,17 @@ components:
           allOf:
             - $ref: '#/components/schemas/ProfileStaffInfo'
           nullable: true
-      required: [id, first_name, last_name, bio, subscribers, subscriptions, student, staff, is_subscribed]
+        address:
+          type: string
+          nullable: true
+          description: Only shown for own profile
+        date_of_birth:
+          type: string
+          format: date-time
+        interests:
+          type: string
+          description: Comma-separated strings
+      required: [id, first_name, last_name, bio, subscribers, subscriptions, student, staff, is_subscribed, email, address, date_of_birth, interests]
       
     ProfileById:
       allOf:
