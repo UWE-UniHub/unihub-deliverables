@@ -1247,7 +1247,12 @@ components:
           type: number
         is_liked:
           type: boolean
-      required: [id, content, created_at, event_id, likes, is_liked]
+        hidden:
+          type: boolean
+        tags:
+          type: string
+          description: Comma-separated string
+      required: [id, content, created_at, event_id, likes, is_liked, hidden, tags]
       
     PostProfile:
       allOf:
@@ -1317,7 +1322,11 @@ components:
           type: string
           format: uuid
           nullable: true
-      required: [content, event_id]
+        hidden:
+          type: boolean
+        tags:
+          type: string
+      required: [content, event_id, hidden, tags]
       
     PostPatch:
       type: object
@@ -1328,6 +1337,11 @@ components:
           type: string
           format: uuid
           nullable: true
+        hidden:
+          type: boolean
+        tags:
+          type: string
+          description: Comma-separated string
     
     EventGeneric:
       type: object
