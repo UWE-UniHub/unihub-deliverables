@@ -1159,6 +1159,16 @@ components:
         bio:
           type: string
           nullable: true
+        email:
+          type: string
+        address:
+          type: string
+        date_of_birth:
+          type: string
+          format: date-time
+        interests:
+          type: string
+          description: Comma-separated strings
       
     Community:
       type: object
