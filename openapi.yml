@@ -421,8 +421,7 @@ paths:
       summary: Get latest posts
       operationId: postsGet
       parameters:
-        - $ref: '#/components/parameters/offset'
-        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/page'
       responses:
         '200':
           description: Ok
@@ -592,8 +591,7 @@ paths:
       operationId: profileIdPostsGet
       parameters:
         - $ref: '#/components/parameters/profileId'
-        - $ref: '#/components/parameters/offset'
-        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/page'
       responses:
         '200':
           description: Ok
@@ -630,8 +628,7 @@ paths:
       operationId: communityIdPostsGet
       parameters:
         - $ref: '#/components/parameters/communityId'
-        - $ref: '#/components/parameters/offset'
-        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/page'
       responses:
         '200':
           description: Ok
@@ -660,6 +657,101 @@ paths:
             application/json:
               schema:
                   $ref: '#/components/schemas/PostCommunity'
+                  
+  paths:
+  /posts/{postId}/comments:
+    get:
+      tags:
+        - posts
+      summary: Get comments for a post
+      operationId: postCommentsGet
+      parameters:
+        - $ref: '#/components/parameters/postId'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: A paginated list of comments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedComments'
+    post:
+      tags:
+        - posts
+      summary: Add a comment to a post
+      operationId: postCommentsPost
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/postId'
+      requestBody:
+        description: New comment data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentCreate'
+      responses:
+        '201':
+          description: Created comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+
+  /posts/{postId}/comments/{commentId}:
+    get:
+      tags:
+        - posts
+      summary: Get a single comment
+      operationId: commentGet
+      parameters:
+        - $ref: '#/components/parameters/postId'
+        - $ref: '#/components/parameters/commentId'
+      responses:
+        '200':
+          description: A single comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+    patch:
+      tags:
+        - posts
+      summary: Edit a comment
+      operationId: commentPatch
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/postId'
+        - $ref: '#/components/parameters/commentId'
+      requestBody:
+        description: Updated comment data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentCreate'
+      responses:
+        '200':
+          description: Updated comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+    delete:
+      tags:
+        - posts
+      summary: Delete a comment
+      operationId: commentDelete
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/postId'
+        - $ref: '#/components/parameters/commentId'
+      responses:
+        '204':
+          description: No Content
                   
   /events:
     get:
@@ -1020,14 +1112,8 @@ components:
       schema:
         type: string
         format: uuid
-    offset:
-      name: offset
-      in: query
-      required: false
-      schema:
-        type: number
-    limit:
-      name: limit
+    page:
+      name: page
       in: query
       required: false
       schema:
@@ -1038,6 +1124,13 @@ components:
       required: false
       schema:
         type: string
+    commentId:
+      name: commentId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
         
   schemas:
   
@@ -1270,11 +1363,15 @@ components:
       properties:
         count:
           type: number
+        total_pages:
+          type: number
+        current_page:
+          type: number  
         next_page:
           type: number
         previous_page:
           type: number
-      required: [count, next_page, previous_page]
+      required: [count, total_pages, current_page, next_page, previous_page]
     Feed:
       allOf:
         - $ref: '#/components/schemas/GenericFeed'
@@ -1306,6 +1403,16 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/PostCommunity'
+          required: [results]
+    FeedComments:
+      allOf:
+        - $ref: '#/components/schemas/GenericFeed'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Comment'
           required: [results]
       
     PostPost:
@@ -1339,6 +1446,34 @@ components:
           type: string
           nullable: true
           description: Comma-separated string
+    
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        post:
+          type: string
+          format: uuid
+        author:
+          $ref: '#/components/schemas/Profile'
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required: [id, post, author, content, created_at, updated_at]
+
+    CommentCreate:
+      type: object
+      properties:
+        content:
+          type: string
+      required: [content]
     
     EventGeneric:
       type: object
