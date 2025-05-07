@@ -1269,7 +1269,9 @@ components:
           nullable: true
         subscribers:
           type: number
-      required: [id,name, bio, subscribers]
+        tags:
+          type: string
+      required: [id,name, bio, subscribers, tags]
       
     CommunityDetailed:
       allOf:
@@ -1294,7 +1296,9 @@ components:
         bio:
           type: string
           nullable: true
-      required: [id,name, bio]
+        tags:
+          type: string
+      required: [id, name, bio, tags]
           
     CommunityPatch:
       type: object
@@ -1304,6 +1308,8 @@ components:
         bio:
           type: string
           nullable: true
+        tags:
+          type: string
     
     CommunityAdmins:
       type: object
