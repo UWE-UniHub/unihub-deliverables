@@ -1508,7 +1508,9 @@ components:
           type: number
         is_subscribed:
           type: boolean
-      required: [id, description, created_at, location, date, required_materials, max_capacity, subscribers_count, is_subscribed]
+        is_deleteable:
+          type: boolean
+      required: [id, description, created_at, location, date, required_materials, max_capacity, subscribers_count, is_subscribed, is_deleteable]
     
     EventProfile:
       allOf:
