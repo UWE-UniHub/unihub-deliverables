@@ -1340,13 +1340,15 @@ components:
           type: number
         is_liked:
           type: boolean
+        is_editable:
+          type: boolean
         hidden:
           type: boolean
         tags:
           type: string
           nullable: true
           description: Comma-separated string
-      required: [id, content, created_at, event_id, likes, is_liked, hidden, tags]
+      required: [id, content, created_at, event_id, likes, is_liked, hidden, tags, is_editable]
       
     PostProfile:
       allOf:
